@@ -22,7 +22,8 @@ dependencies:
   - matplotlib=3.9
   - scikit-image=0.24
   - h5py=3.11
-  - xarray
+  - xarray=2024.9.0
+  - nibabel=5.2.1
 
   # Deep Learning & ML
   - pytorch=2.3.1
