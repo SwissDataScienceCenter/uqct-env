@@ -5,6 +5,7 @@ channels:
   - astra-toolbox
   - conda-forge
   - nvidia
+  - https://gitlab.datascience.ch/api/v4/projects/787/packages/generic/dropbear-channel/latest
   - nodefaults
   
 dependencies:
@@ -13,6 +14,8 @@ dependencies:
   - jupyterlab=4.2
   - notebook=7.2
   - pip
+  - conda
+  - mamba
   - tqdm
 
   # Scientific Computing & Data Science
@@ -36,3 +39,6 @@ dependencies:
 
   # Imaging
   - astra-toolbox=2.4.0
+
+  # Runai ssh access
+  - dropbear=2025.88
