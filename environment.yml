@@ -1,0 +1,37 @@
+name: uqct
+
+channels:
+  - pytorch
+  - astra-toolbox
+  - conda-forge
+  - nvidia
+  - nodefaults
+  
+dependencies:
+  # Core Python and Tools
+  - python=3.11
+  - jupyterlab=4.2
+  - notebook=7.2
+  - pip
+  - tqdm
+
+  # Scientific Computing & Data Science
+  - numpy=1.24
+  - pandas=2.2
+  - scipy=1.14
+  - matplotlib=3.9
+  - scikit-image=0.24
+  - h5py=3.11
+  - xarray
+
+  # Deep Learning & ML
+  - pytorch=2.3.1
+  - torchvision=0.18.1
+  - pytorch-cuda=12.1 
+  - huggingface_hub=0.25
+  - diffusers=0.30
+  - tensorboard=2.18
+  - wandb=0.17
+
+  # Imaging
+  - astra-toolbox=2.4.0
