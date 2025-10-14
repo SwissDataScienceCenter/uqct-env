@@ -14,7 +14,7 @@ env:
   PACK_VOLUME_KEY: "kirschnj-renku2runai-cache"
   BP_SBO_ENABLED: "false"
   PACK_VERSION: "0.38.2"
-  IMAGE_BASE: ghcr.io/${{ toLower(github.repository) }}
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
 
 jobs:
   build-runai-image:
@@ -23,6 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: lowercase REPO
+        id: lowercase_repo
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY@L}" >> "${GITHUB_OUTPUT}"
+      
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -45,7 +50,7 @@ jobs:
       - name: Build image with pack
         run: |
           set -euo pipefail
-          pack build "$IMAGE_BASE/renku2runai:latest" \
+          pack build "$REPO/renku2runai:latest" \
             --builder ghcr.io/swissdatasciencecenter/renku-frontend-buildpacks/selector:0.1.0 \
             --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/runai-renku-base:latest \
             --pull-policy if-not-present \
@@ -59,4 +64,4 @@ jobs:
       - name: Push images
         run: |
           set -euo pipefail
-          docker push "$IMAGE_BASE/renku2runai:latest"
+          docker push "$REPO/renku2runai:latest"
