@@ -1,0 +1,36 @@
+stages:
+  - build
+
+variables:
+  PACK_VOLUME_KEY: "kirschnj-renku2runai-cache"
+  BP_SBO_ENABLED: "false"
+
+build_runai_image:
+  stage: build
+  image: docker:stable 
+  services:
+    - docker:dind
+  before_script:
+    - apk add --no-cache curl
+    - PACK_VERSION=0.38.2
+    - curl -sSL "https://github.com/buildpacks/pack/releases/download/v${PACK_VERSION}/pack-v${PACK_VERSION}-linux.tgz" | tar -C /usr/local/bin -xz pack
+    - pack version
+    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
+  script: |
+    set -euo pipefail
+    pack build $CI_REGISTRY_IMAGE/example-app-renku-image:latest \
+    --builder ghcr.io/swissdatasciencecenter/renku-frontend-buildpacks/selector:0.1.0 \
+    --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/runai-renku-base:latest\
+    --pull-policy if-not-present \
+    --buildpack renku/conda-nodefaults \
+    --buildpack paketo-buildpacks/ca-certificates \
+    --buildpack paketo-buildpacks/miniconda \
+    --buildpack paketo-buildpacks/conda-env-update \
+    --buildpack paketo-buildpacks/python-start \
+    --buildpack renku/python-dependency-manager
+    # Publish to registry
+    docker push $CI_REGISTRY_IMAGE/renku2runai:latest
+  rules:
+    - changes:
+        - environment.yml
+    - when: manual
