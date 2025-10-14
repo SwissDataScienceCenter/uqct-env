@@ -20,7 +20,7 @@ build_runai_image:
     set -euo pipefail
     pack build $CI_REGISTRY_IMAGE/renku2runai:latest \
     --builder ghcr.io/swissdatasciencecenter/renku-frontend-buildpacks/selector:0.1.0 \
-    --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/runai-renku-base:latest\
+    --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/runai2renku-base:latest \
     --pull-policy if-not-present \
     --buildpack renku/conda-nodefaults \
     --buildpack paketo-buildpacks/ca-certificates \
