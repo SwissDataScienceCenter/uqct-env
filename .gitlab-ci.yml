@@ -18,7 +18,7 @@ build_runai_image:
     - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
   script: |
     set -euo pipefail
-    pack build $CI_REGISTRY_IMAGE/example-app-renku-image:latest \
+    pack build $CI_REGISTRY_IMAGE/renku2runai:latest \
     --builder ghcr.io/swissdatasciencecenter/renku-frontend-buildpacks/selector:0.1.0 \
     --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/runai-renku-base:latest\
     --pull-policy if-not-present \
