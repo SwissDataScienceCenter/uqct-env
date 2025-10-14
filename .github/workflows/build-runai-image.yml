@@ -14,7 +14,7 @@ env:
   PACK_VOLUME_KEY: "kirschnj-renku2runai-cache"
   BP_SBO_ENABLED: "false"
   PACK_VERSION: "0.38.2"
-  IMAGE_BASE: ghcr.io/${{ github.repository }}
+  IMAGE_BASE: ghcr.io/${{ toLower(github.repository) }}
 
 jobs:
   build-runai-image:
