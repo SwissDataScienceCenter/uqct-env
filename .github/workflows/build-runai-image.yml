@@ -26,7 +26,7 @@ jobs:
       - name: lowercase REPO
         id: lowercase_repo
         run: |
-          echo "REPO=${GITHUB_REPOSITORY@L}" >> "${GITHUB_OUTPUT}"
+          echo "REPO=${GITHUB_REPOSITORY@L}" >> $GITHUB_ENV
       
       - name: Log in to GHCR
         uses: docker/login-action@v3
