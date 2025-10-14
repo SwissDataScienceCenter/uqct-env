@@ -8,8 +8,6 @@ variables:
 build_runai_image:
   stage: build
   image: docker:stable 
-  services:
-    - docker:dind
   before_script:
     - apk add --no-cache curl
     - PACK_VERSION=0.38.2
