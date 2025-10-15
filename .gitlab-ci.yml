@@ -24,5 +24,3 @@ image_build_runai:
     - changes:
         - Dockerfile
     - when: manual
-  only:
-    - main
