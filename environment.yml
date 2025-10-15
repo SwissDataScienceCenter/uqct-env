@@ -12,9 +12,6 @@ dependencies:
   - python=3.11
   - jupyterlab=4.2
   - notebook=7.2
-  - pip
-  - conda
-  - mamba
   - tqdm
 
   # Scientific Computing & Data Science
@@ -23,7 +20,7 @@ dependencies:
   - scipy=1.14
   - matplotlib=3.9
   - scikit-image=0.24
-  - h5py=3.11
+  - h5py=*=nompi_*
   - xarray=2024.9.0
   - nibabel=5.2.1
 

@@ -26,13 +26,12 @@ RUN set -eu; \
     
 # install Miniforge (conda-forge bootstrap) + mamba
 RUN set -eux; \
-    arch="$(uname -m)"; \
-    url="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-${arch}.sh"; \
-    wget -O /tmp/miniforge.sh "${url}"; \
-    bash /tmp/miniforge.sh -b -p /opt/conda; \
-    rm /tmp/miniforge.sh
-
-RUN /opt/conda/bin/conda config --system --set channel_priority strict && \
+    arch="$(uname -m)" && \
+    url="https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-${arch}.sh" && \
+    wget -O /tmp/miniforge.sh "${url}" && \
+    bash /tmp/miniforge.sh -b -p /opt/conda && \
+    rm /tmp/miniforge.sh && \
+    /opt/conda/bin/conda config --system --set channel_priority strict && \
     /opt/conda/bin/conda install -y mamba pip pipx -n base -c conda-forge && \
     /opt/conda/bin/conda clean -y --all && \
     /opt/conda/bin/pipx ensurepath && \
@@ -43,8 +42,6 @@ RUN id -u ${USER} || useradd -s /bin/bash ${USER} && usermod -a -G ${USER} ${USE
 
 # passwordless sudo
 RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-
 
 # Prepare user-owned SSH layout and host keys
 # Generate host keys as root, then copy into a user-owned tree
@@ -75,49 +72,31 @@ RUN \
     chown user:user /home/user/sshd_config && \
     chmod 600 /home/user/sshd_config
 
-
-
-# create workspace
-RUN mkdir -p /home/${USER}/workspace
-WORKDIR /home/${USER}/workspace
-
-# conda env create --file=environment.yml
-
-
-# python -m venv --system-site-packages \${RENKU_MOUNT_DIR}/.venv
-
-# # install conda environment
-# COPY environment.yml /environment.yml
-# RUN /opt/conda/bin/mamba create -n default python=3.11 && \
-#     /opt/conda/bin/mamba env update -f /environment.yml -n default && \
-#     /opt/conda/bin/mamba clean -y --all
-
-# create /workspace directory
-RUN mkdir -p /workspace
-
-
-# copy environment.yml into /workspace
-COPY environment.yml /workspace/environment.yml
-
-RUN /opt/conda/bin/conda env create -f /workspace/environment.yml && \
-    /opt/conda/bin/conda clean -y --all
-
-
-# startup configuration
-USER ${USER}
-# RUN /opt/conda/bin/conda init bash
-
-# activate conda base environment and create Python venv with system site packages
-RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && conda activate uqct && python -m venv --system-site-packages /home/${USER}/.venv/uqct"
-
-RUN echo "source /home/${USER}/.venv/uqct/bin/activate" >> /home/${USER}/.bashrc
-
 # copy start_sshd.sh
 RUN cat > /home/${USER}/start_sshd.sh <<'EOF'
 #!/bin/bash
 unset LD_LIBRARY_PATH
 exec /usr/sbin/sshd -D -e -f /home/${USER}/sshd_config
 EOF
-RUN chmod +x /home/${USER}/start_sshd.sh
+RUN chmod +x /home/${USER}/start_sshd.sh && \
+    chown ${USER}:${USER} /home/${USER}/start_sshd.sh
+
+
+# create workspace
+RUN mkdir -p /home/${USER}/workspace
+WORKDIR /home/${USER}/workspace
+
+# copy environment.yml into /workspace
+COPY environment.yml /workspace/${USER}/environment.yml
+
+RUN /opt/conda/bin/mamba env create -f /workspace/${USER}/environment.yml && \
+/opt/conda/bin/mamba clean -y --all
+
+# startup configuration
+USER ${USER}
+
+# activate conda base environment and create Python venv with system site packages
+RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && conda activate uqct && python -m venv --system-site-packages /home/${USER}/.venv/uqct"
+RUN echo "source /home/${USER}/.venv/uqct/bin/activate" >> /home/${USER}/.bashrc
 
 ENTRYPOINT /bin/bash
