@@ -15,7 +15,8 @@ image_build_runai:
   script: |
     CI_COMMIT_SHA_7=$(echo $CI_COMMIT_SHA | cut -c1-7)
     DATE=$(date +%Y-%m-%d)
-    docker build --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest \
+    docker build --build-arg ENV_NAME=$CI_PROJECT_NAME \
+                 --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest \
                  --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:$DATE \
                  -f Dockerfile .
     docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest

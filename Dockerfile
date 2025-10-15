@@ -4,6 +4,9 @@ FROM ${BASE_IMAGE}
 ARG USER="user"
 ENV USER=$USER
 
+ARG ENV_NAME="env"
+ENV ENV_NAME=$ENV_NAME
+
 USER root
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -89,14 +92,14 @@ WORKDIR /home/${USER}/workspace
 # copy environment.yml into /workspace
 COPY environment.yml /workspace/${USER}/environment.yml
 
-RUN /opt/conda/bin/mamba env create -f /workspace/${USER}/environment.yml && \
+RUN /opt/conda/bin/mamba env create -f /workspace/${USER}/environment.yml -n ${ENV_NAME} && \
 /opt/conda/bin/mamba clean -y --all
 
 # startup configuration
 USER ${USER}
 
 # activate conda base environment and create Python venv with system site packages
-RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && conda activate uqct && python -m venv --system-site-packages /home/${USER}/.venv/uqct"
-RUN echo "source /home/${USER}/.venv/uqct/bin/activate" >> /home/${USER}/.bashrc
+RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && conda activate ${ENV_NAME} && python -m venv --system-site-packages /home/${USER}/.venv/${ENV_NAME}"
+RUN echo "source /home/${USER}/.venv/${ENV_NAME}/bin/activate" >> /home/${USER}/.bashrc
 
 ENTRYPOINT /bin/bash
