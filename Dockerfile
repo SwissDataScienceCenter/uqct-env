@@ -42,7 +42,7 @@ RUN set -eux; \
 
 # handle the USER setup
 RUN id -u ${USER} || useradd -s /bin/bash ${USER} && usermod -a -G ${USER} ${USER} && usermod -a -G users ${USER}
-RUN echo 'if [ -f ~/.bashrc ]; then\n    . ~/.bashrc\nfi' >> /home/${USER}/.bash_profile
+
 
 # passwordless sudo
 RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -98,6 +98,8 @@ RUN /opt/conda/bin/mamba env create -f /workspace/${USER}/environment.yml -n ${E
 
 # startup configuration
 USER ${USER}
+
+RUN echo 'if [ -f ~/.bashrc ]; then\n    . ~/.bashrc\nfi' >> /home/${USER}/.bash_profile
 
 # activate conda base environment and create Python venv with system site packages
 RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh && conda activate ${ENV_NAME} && python -m venv --system-site-packages /home/${USER}/.venv/${ENV_NAME}"
