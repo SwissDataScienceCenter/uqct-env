@@ -23,4 +23,5 @@ image_build_runai:
   rules:
     - changes:
         - Dockerfile
+        - environment.yml
     - when: manual
