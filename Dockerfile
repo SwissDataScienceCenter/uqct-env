@@ -42,6 +42,7 @@ RUN set -eux; \
 
 # handle the USER setup
 RUN id -u ${USER} || useradd -s /bin/bash ${USER} && usermod -a -G ${USER} ${USER} && usermod -a -G users ${USER}
+RUN echo 'if [ -f ~/.bashrc ]; then\n    . ~/.bashrc\nfi' >> /home/${USER}/.bash_profile
 
 # passwordless sudo
 RUN echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
