@@ -25,4 +25,4 @@ image_build_runai:
         - Dockerfile
     - when: manual
   only:
-    - master
+    - main
