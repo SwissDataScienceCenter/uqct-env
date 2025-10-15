@@ -1,12 +1,11 @@
 name: uqct
 
 channels:
-  - pytorch
-  - astra-toolbox
   - conda-forge
   - nvidia
+  - pytorch
+  - astra-toolbox
   # - https://gitlab.datascience.ch/api/v4/projects/787/packages/generic/dropbear/repo
-  - nodefaults
   
 dependencies:
   # Core Python and Tools

@@ -1,34 +1,28 @@
+variables:
+  GIT_STRATEGY: fetch
+  GIT_SSL_NO_VERIFY: "true"
+  GIT_LFS_SKIP_SMUDGE: 1
+  DOCKER_BUILDKIT: 1
+
 stages:
   - build
 
-variables:
-  PACK_VOLUME_KEY: "kirschnj-renku2runai-cache"
-  BP_SBO_ENABLED: "false"
-
-build_runai_image:
+image_build_runai:
   stage: build
-  image: docker:stable 
+  image: docker:stable
   before_script:
-    - apk add --no-cache curl
-    - PACK_VERSION=0.38.2
-    - curl -sSL "https://github.com/buildpacks/pack/releases/download/v${PACK_VERSION}/pack-v${PACK_VERSION}-linux.tgz" | tar -C /usr/local/bin -xz pack
-    - pack version
-    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN http://$CI_REGISTRY
   script: |
-    set -euo pipefail
-    pack build $CI_REGISTRY_IMAGE/renku2runai:latest \
-    --builder ghcr.io/swissdatasciencecenter/renku-frontend-buildpacks/selector:0.1.0 \
-    --run-image gitlab-registry.datascience.ch/kirschnj/renku2runai/renku2runai-base:latest \
-    --pull-policy if-not-present \
-    --buildpack renku/conda-nodefaults \
-    --buildpack paketo-buildpacks/ca-certificates \
-    --buildpack paketo-buildpacks/miniconda \
-    --buildpack paketo-buildpacks/conda-env-update \
-    --buildpack paketo-buildpacks/python-start \
-    --buildpack renku/python-dependency-manager
-    # Publish to registry
-    docker push $CI_REGISTRY_IMAGE/renku2runai:latest
+    CI_COMMIT_SHA_7=$(echo $CI_COMMIT_SHA | cut -c1-7)
+    DATE=$(date +%Y-%m-%d)
+    docker build --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest \
+                 --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:$DATE \
+                 -f Dockerfile .
+    docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest
+    docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:$DATE
   rules:
     - changes:
-        - environment.yml
+        - Dockerfile
     - when: manual
+  only:
+    - master
