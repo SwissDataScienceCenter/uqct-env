@@ -3,7 +3,8 @@ variables:
   GIT_SSL_NO_VERIFY: "true"
   GIT_LFS_SKIP_SMUDGE: 1
   DOCKER_BUILDKIT: 1
-
+  BUILDKIT_INLINE_CACHE: 1
+  
 stages:
   - build
 
@@ -18,6 +19,7 @@ image_build_runai:
     docker build --build-arg ENV_NAME=$CI_PROJECT_NAME \
                  --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest \
                  --tag $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:$DATE \
+                 --cache-from $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest \
                  -f Dockerfile .
     docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:latest
     docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_BRANCH/runai:$DATE
